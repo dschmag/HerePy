@@ -384,7 +384,9 @@ class RoutingApi(HEREApi):
         return_fields: List[RoutingApiReturnField] = [RoutingApiReturnField.polyline],
         span_fields: Optional[List[RoutingApiSpanField]] = None,
         truck: Optional[Dict[str, List[str]]] = None,
+        ev: Optional[Dict[str, str]] = None,
         scooter: Optional[Dict[str, str]] = None,
+        vehicle: Optional[Dict[str, str]] = None,
         headers: Optional[dict] = None,
     ) -> Optional[RoutingResponseV8]:
         """Calculates the route between given origin and destination.
@@ -496,9 +498,19 @@ class RoutingApi(HEREApi):
             data["truck"] = {
                 key: ",".join(values),
             }
+        if ev:
+            # data["ev"] = ev
+            for k in ev:
+              print(k,ev[k])
+              if type(ev[k]) == list: # vec
+                data[f'ev[{k}]']= ",".join([field.__str__() for field in ev[k]])
+              else:
+                data[f'ev[{k}]']=ev[k]
         if scooter:
             data["scooter"] = scooter
-
+        if vehicle:
+            data["vehicle"] = vehicle
+        print(data)
         response = self.__get(
             self.URL_CALCULATE_ROUTE_V8,
             data,
